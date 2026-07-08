@@ -89,16 +89,6 @@ const PAYMENT_METHODS_BY_CURRENCY: Record<Currency, PaymentMethodOption[]> = {
   ],
   PHP: [
     {
-      id: 'card',
-      name: 'Card',
-      generateParam: '',
-      apiKeyRegion: 'PH',
-      requiresRedirectUrl: true,
-      requiresPhone: false,
-      responseType: 'redirect',
-      isHostedCheckout: true,
-    },
-    {
       id: 'shopee_pay',
       name: 'Shopee Pay',
       generateParam: 'generate_direct_link',
