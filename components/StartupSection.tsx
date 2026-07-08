@@ -8,6 +8,7 @@ import PaymentMethodCard from '@/components/PaymentMethodCard';
 import type { RecurringBillingResponse, Environment } from '@/lib/hitpay';
 
 const METHOD_DESCRIPTIONS: Record<string, string> = {
+  card: "After submission, you'll be guided through completing the next steps with Cards.",
   shopee_pay: "After submission, you'll be guided through completing the next steps with Shopee Pay.",
   grabpay_direct: "After submission, you'll be guided through completing the next steps with GrabPay.",
   touch_n_go: "After submission, you'll be guided through completing the next steps with Touch 'N Go.",
@@ -22,6 +23,14 @@ const ACTIVATION_AMOUNTS: Record<Currency, string> = {
   PHP: '43.00',
   VND: '17500',
   THB: '26.00',
+};
+
+const CURRENCY_FLAGS: Record<Currency, string> = {
+  SGD: '🇸🇬',
+  MYR: '🇲🇾',
+  PHP: '🇵🇭',
+  VND: '🇻🇳',
+  THB: '🇹🇭',
 };
 
 interface StartupSectionProps {
@@ -66,6 +75,7 @@ export default function StartupSection({
         generate_param: selectedMethod.generateParam,
         api_key_region: selectedMethod.apiKeyRegion,
         environment,
+        is_api_platform: 'true',
       };
 
       if (companyName) body.customer_name = companyName;
@@ -89,6 +99,18 @@ export default function StartupSection({
 
       if (!res.ok) {
         onError(data.message || 'Something went wrong');
+        return;
+      }
+
+      // For card payments, redirect to hosted checkout URL
+      if (selectedMethod.id === 'card' && data.url) {
+        sessionStorage.setItem('hp_api_platform_checkout_state', JSON.stringify({
+          currency,
+          environment,
+          customerEmail: customerEmail,
+          amount: ACTIVATION_AMOUNTS[currency],
+        }));
+        window.location.href = data.url;
         return;
       }
 
@@ -163,11 +185,11 @@ export default function StartupSection({
                 onChange={(e) => onCurrencyChange(e.target.value as Currency)}
                 className="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
               >
-                <option value="SGD">SGD</option>
-                <option value="MYR">MYR</option>
-                <option value="PHP">PHP</option>
-                <option value="VND">VND</option>
-                <option value="THB">THB</option>
+                <option value="SGD">{CURRENCY_FLAGS.SGD} SGD</option>
+                <option value="MYR">{CURRENCY_FLAGS.MYR} MYR</option>
+                <option value="PHP">{CURRENCY_FLAGS.PHP} PHP</option>
+                <option value="VND">{CURRENCY_FLAGS.VND} VND</option>
+                <option value="THB">{CURRENCY_FLAGS.THB} THB</option>
               </select>
             </div>
             <p className="text-sm text-gray-500 mb-6">

@@ -65,6 +65,7 @@ export default function Home() {
               payment_methods: [],
               created_at: new Date().toISOString(),
             };
+            setCurrency(c);
             setDemoMode('subscription');
             setResult(mockResult as any);
             sessionStorage.removeItem('hp_checkout_state');
@@ -100,6 +101,7 @@ export default function Home() {
               created_at: new Date().toISOString(),
             };
             sessionStorage.setItem('hp_api_platform_result', JSON.stringify(mockResult));
+            sessionStorage.setItem('hp_api_platform_currency', c);
             sessionStorage.removeItem('hp_api_platform_checkout_state');
             window.location.href = '/';
             return;
@@ -131,9 +133,12 @@ export default function Home() {
     if (savedApiResult) {
       try {
         const result = JSON.parse(savedApiResult);
+        const savedCurrency = sessionStorage.getItem('hp_api_platform_currency');
+        if (savedCurrency) setCurrency(savedCurrency as Currency);
         setDemoMode('api-platform');
         setResult(result);
         sessionStorage.removeItem('hp_api_platform_result');
+        sessionStorage.removeItem('hp_api_platform_currency');
         setTimeout(() => {
           document.getElementById('result')?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
@@ -250,7 +255,7 @@ export default function Home() {
           />
 
           {selectedPlan && (
-            <div id="checkout">
+            <div id="checkout" className="scroll-mt-20 sm:scroll-mt-24">
               <CheckoutSection
                 plan={selectedPlan}
                 currency={currency}

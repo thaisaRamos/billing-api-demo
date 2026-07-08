@@ -10,6 +10,7 @@ interface PaymentMethodCardProps {
 }
 
 const METHOD_LOGOS: Record<string, string> = {
+  card: '/card.svg',
   shopee_pay: '/shopeepay.svg',
   grabpay_direct: '/grabpay.svg',
   touch_n_go: '/touchngo_ewallet.svg',
@@ -32,14 +33,14 @@ export default function PaymentMethodCard({
           : 'border-gray-200 bg-white hover:border-gray-300'
       }`}
     >
-      <div aria-hidden="true" className="h-8 w-16 flex items-center justify-center">
+      <div aria-hidden="true" className="h-10 w-16 flex items-center justify-center">
         {METHOD_LOGOS[method.id] ? (
           <Image
             src={METHOD_LOGOS[method.id]}
             alt=""
             width={64}
             height={32}
-            className="object-contain h-8 w-auto"
+            className="object-contain h-10 w-auto"
           />
         ) : (
           <span className="text-xs font-bold text-gray-400">{method.name}</span>

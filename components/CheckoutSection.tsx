@@ -8,12 +8,22 @@ import type { PaymentMethodOption } from '@/lib/payment-methods';
 import PaymentMethodCard from '@/components/PaymentMethodCard';
 
 const METHOD_DESCRIPTIONS: Record<string, string> = {
+  card: "After submission, you'll be guided through completing the next steps with Cards.",
   shopee_pay: "After submission, you'll be guided through completing the next steps with Shopee Pay.",
   grabpay_direct: "After submission, you'll be guided through completing the next steps with GrabPay.",
   touch_n_go: "After submission, you'll be guided through completing the next steps with Touch 'N Go.",
   zalopay: "A QR code will be displayed for the customer to scan with their ZaloPay app.",
   line_pay: "After submission, you'll be guided through completing the next steps with LINE Pay.",
 };
+
+const CURRENCY_FLAGS: Record<string, string> = {
+  SGD: '🇸🇬',
+  MYR: '🇲🇾',
+  PHP: '🇵🇭',
+  VND: '🇻🇳',
+  THB: '🇹🇭',
+};
+
 import type { RecurringBillingResponse } from '@/lib/hitpay';
 import type { Environment } from '@/lib/hitpay';
 
@@ -53,6 +63,7 @@ export default function CheckoutSection({
     setLoading(true);
 
     try {
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
       const body: Record<string, string> = {
         customer_email: customerEmail,
         amount: formatAmountForApi(plan.basePriceSGD, currency),
@@ -61,12 +72,24 @@ export default function CheckoutSection({
         payment_method: selectedMethod.id,
         generate_param: selectedMethod.generateParam,
         api_key_region: selectedMethod.apiKeyRegion,
-        environment: environment as string,
       };
 
+      if (selectedMethod.id !== 'card') {
+        body.environment = environment as string;
+      }
+
+      // Add cycle information for recurring plans (cards only use this)
+      if (selectedMethod.id === 'card') {
+        body.cycle = 'monthly';
+        body.cycle_frequency = 'month';
+        // Start date is today (YYYY-MM-DD format)
+        const today = new Date();
+        body.start_date = today.toISOString().split('T')[0];
+      }
+
       if (customerName) body.customer_name = customerName;
+
       if (selectedMethod.requiresRedirectUrl) {
-        const origin = typeof window !== 'undefined' ? window.location.origin : '';
         body.redirect_url = origin;
         body.cancel_url = `${origin}/cancelled?plan=${encodeURIComponent(plan.name)}`;
       }
@@ -75,7 +98,9 @@ export default function CheckoutSection({
         body.customer_phone_number_country_code = phoneCountryCode;
       }
 
-      const res = await fetch('/api/recurring-billing', {
+      // Use different endpoints for cards vs APMs
+      const endpoint = selectedMethod.id === 'card' ? '/api/recurring-billing' : '/api/embedded-recurring-billing';
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -85,6 +110,18 @@ export default function CheckoutSection({
 
       if (!res.ok) {
         onError(data.message || 'Something went wrong');
+        return;
+      }
+
+      // For card payments, redirect to hosted checkout URL
+      if (selectedMethod.id === 'card' && data.url) {
+        sessionStorage.setItem('hp_checkout_state', JSON.stringify({
+          planId: plan.id,
+          planName: plan.name,
+          currency,
+          environment,
+        }));
+        window.location.href = data.url;
         return;
       }
 
@@ -126,11 +163,11 @@ export default function CheckoutSection({
                 onChange={(e) => onCurrencyChange(e.target.value as Currency)}
                 className="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
               >
-                <option value="SGD">SGD</option>
-                <option value="MYR">MYR</option>
-                <option value="PHP">PHP</option>
-                <option value="VND">VND</option>
-                <option value="THB">THB</option>
+                <option value="SGD">{CURRENCY_FLAGS.SGD} SGD</option>
+                <option value="MYR">{CURRENCY_FLAGS.MYR} MYR</option>
+                <option value="PHP">{CURRENCY_FLAGS.PHP} PHP</option>
+                <option value="VND">{CURRENCY_FLAGS.VND} VND</option>
+                <option value="THB">{CURRENCY_FLAGS.THB} THB</option>
               </select>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -211,10 +248,10 @@ export default function CheckoutSection({
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 sm:py-4 px-6 rounded-xl transition-colors cursor-pointer text-base sm:text-lg shadow-md hover:shadow-lg"
           >
-            {loading ? 'Setting up...' : `Setup ${selectedMethod.name}`}
+            {loading ? 'Processing...' : `Pay with ${selectedMethod.name}`}
           </button>
           <p className="text-xs text-center text-gray-400 -mt-2">
-            By continuing, you authorise automatic charges to your payment method for future billing cycles.
+            You will be redirected to our secure payment page.
           </p>
         </form>
         </div>

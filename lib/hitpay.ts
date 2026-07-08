@@ -17,6 +17,10 @@ export interface RecurringBillingRequest {
   cancel_url?: string;
   customer_phone_number?: string;
   customer_phone_number_country_code?: string;
+  cycle?: string;
+  cycle_frequency?: string;
+  start_date?: string;
+  is_api_platform?: string;
 }
 
 export interface QrCodeData {
@@ -67,8 +71,15 @@ export async function createRecurringBilling(
   body.append('currency', request.currency);
   body.append('name', request.name);
   body.append('payment_methods[]', request.payment_method);
-  body.append('save_payment_method', 'true');
-  body.append(request.generate_param, '1');
+  // For API Platform cards, use save_payment_method: true; for recurring billing cards, use false
+  const isCardPayment = request.payment_method === 'card';
+  const isApiPlatform = request.is_api_platform === 'true';
+  const savePaymentMethod = isCardPayment && isApiPlatform ? 'true' : (isCardPayment ? 'false' : 'true');
+  body.append('save_payment_method', savePaymentMethod);
+  if (request.generate_param) body.append(request.generate_param, '1');
+  if (request.cycle) body.append('cycle', request.cycle);
+  if (request.cycle_frequency) body.append('cycle_frequency', request.cycle_frequency);
+  if (request.start_date) body.append('start_date', request.start_date);
   if (request.redirect_url) body.append('redirect_url', request.redirect_url);
   if (request.cancel_url) body.append('cancel_url', request.cancel_url);
   if (request.customer_phone_number) body.append('customer_phone_number', request.customer_phone_number);

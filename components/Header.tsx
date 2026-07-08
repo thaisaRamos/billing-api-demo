@@ -11,6 +11,14 @@ interface HeaderProps {
 
 const CURRENCIES: Currency[] = ['SGD', 'MYR', 'PHP', 'VND', 'THB'];
 
+const CURRENCY_FLAGS: Record<Currency, string> = {
+  SGD: '🇸🇬',
+  MYR: '🇲🇾',
+  PHP: '🇵🇭',
+  VND: '🇻🇳',
+  THB: '🇹🇭',
+};
+
 export default function Header({
   currency,
   onCurrencyChange,
@@ -39,7 +47,7 @@ export default function Header({
           >
             {CURRENCIES.map((c) => (
               <option key={c} value={c}>
-                {c}
+                {CURRENCY_FLAGS[c]} {c}
               </option>
             ))}
           </select>
