@@ -165,8 +165,8 @@ export default function CheckoutSection({
               >
                 <option value="SGD">{CURRENCY_FLAGS.SGD} SGD</option>
                 <option value="MYR">{CURRENCY_FLAGS.MYR} MYR</option>
-                <option value="PHP">{CURRENCY_FLAGS.PHP} PHP</option>
                 <option value="VND">{CURRENCY_FLAGS.VND} VND</option>
+                <option value="PHP">{CURRENCY_FLAGS.PHP} PHP</option>
                 <option value="THB">{CURRENCY_FLAGS.THB} THB</option>
               </select>
             </div>

@@ -9,7 +9,7 @@ interface HeaderProps {
   onCurrencyChange: (currency: Currency) => void;
 }
 
-const CURRENCIES: Currency[] = ['SGD', 'MYR', 'PHP', 'VND', 'THB'];
+const CURRENCIES: Currency[] = ['SGD', 'MYR', 'VND', 'PHP', 'THB'];
 
 const CURRENCY_FLAGS: Record<Currency, string> = {
   SGD: '🇸🇬',

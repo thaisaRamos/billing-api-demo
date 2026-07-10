@@ -20,16 +20,6 @@ export interface PaymentMethodOption {
 const PAYMENT_METHODS_BY_CURRENCY: Record<Currency, PaymentMethodOption[]> = {
   SGD: [
     {
-      id: 'card',
-      name: 'Card',
-      generateParam: '',
-      apiKeyRegion: 'SG',
-      requiresRedirectUrl: true,
-      requiresPhone: false,
-      responseType: 'redirect',
-      isHostedCheckout: true,
-    },
-    {
       id: 'shopee_pay',
       name: 'Shopee Pay',
       generateParam: 'generate_direct_link',
@@ -47,18 +37,18 @@ const PAYMENT_METHODS_BY_CURRENCY: Record<Currency, PaymentMethodOption[]> = {
       requiresPhone: false,
       responseType: 'link',
     },
-  ],
-  MYR: [
     {
       id: 'card',
       name: 'Card',
       generateParam: '',
-      apiKeyRegion: 'MY',
+      apiKeyRegion: 'SG',
       requiresRedirectUrl: true,
       requiresPhone: false,
       responseType: 'redirect',
       isHostedCheckout: true,
     },
+  ],
+  MYR: [
     {
       id: 'shopee_pay',
       name: 'Shopee Pay',
@@ -86,6 +76,16 @@ const PAYMENT_METHODS_BY_CURRENCY: Record<Currency, PaymentMethodOption[]> = {
       requiresPhone: false,
       responseType: 'link',
     },
+    {
+      id: 'card',
+      name: 'Card',
+      generateParam: '',
+      apiKeyRegion: 'MY',
+      requiresRedirectUrl: true,
+      requiresPhone: false,
+      responseType: 'redirect',
+      isHostedCheckout: true,
+    },
   ],
   PHP: [
     {
@@ -100,16 +100,6 @@ const PAYMENT_METHODS_BY_CURRENCY: Record<Currency, PaymentMethodOption[]> = {
   ],
   VND: [
     {
-      id: 'card',
-      name: 'Card',
-      generateParam: '',
-      apiKeyRegion: 'SG',
-      requiresRedirectUrl: true,
-      requiresPhone: false,
-      responseType: 'redirect',
-      isHostedCheckout: true,
-    },
-    {
       id: 'zalopay',
       name: 'ZaloPay',
       generateParam: 'generate_qr',
@@ -118,8 +108,6 @@ const PAYMENT_METHODS_BY_CURRENCY: Record<Currency, PaymentMethodOption[]> = {
       requiresPhone: false,
       responseType: 'qr',
     },
-  ],
-  THB: [
     {
       id: 'card',
       name: 'Card',
@@ -130,6 +118,8 @@ const PAYMENT_METHODS_BY_CURRENCY: Record<Currency, PaymentMethodOption[]> = {
       responseType: 'redirect',
       isHostedCheckout: true,
     },
+  ],
+  THB: [
     {
       id: 'line_pay',
       name: 'LinePay',
@@ -138,6 +128,16 @@ const PAYMENT_METHODS_BY_CURRENCY: Record<Currency, PaymentMethodOption[]> = {
       requiresRedirectUrl: true,
       requiresPhone: false,
       responseType: 'link',
+    },
+    {
+      id: 'card',
+      name: 'Card',
+      generateParam: '',
+      apiKeyRegion: 'SG',
+      requiresRedirectUrl: true,
+      requiresPhone: false,
+      responseType: 'redirect',
+      isHostedCheckout: true,
     },
   ],
 };
